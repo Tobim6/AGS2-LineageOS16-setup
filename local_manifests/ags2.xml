@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="tobim6" fetch="https://github.com/Tobim6" revision="lineage-16.0" />
+
+  <!-- device -->
+  <project path="device/huawei/AGS2" name="android_device_huawei_AGS2" remote="tobim6" />
+  <project path="device/huawei/hi6250-common" name="android_device_huawei_hi6250-common" remote="tobim6" />
+  <!-- kernel (EMUI8 4.4.23 source, D5500_DRM video driver, wifi EAPOL fix) -->
+  <project path="kernel/huawei/AGS2" name="android_kernel_huawei_AGS2" remote="tobim6" />
+  <!-- proprietary blobs (EMUI8 userland + HMOS pieces); isp_dts.img is NOT in git, see scripts/fetch_large_files.sh -->
+  <project path="vendor/huawei/AGS2" name="proprietary_vendor_huawei_AGS2" remote="tobim6" />
+
+  <!-- framework patches for the Huawei camera HAL (branch lineage-16.0-ags2) -->
+  <remove-project name="LineageOS/android_frameworks_av" />
+  <remove-project name="LineageOS/android_frameworks_native" />
+  <project path="frameworks/av" name="android_frameworks_av_los16" remote="tobim6" revision="lineage-16.0-ags2" />
+  <project path="frameworks/native" name="android_frameworks_native_los16" remote="tobim6" revision="lineage-16.0-ags2" />
+</manifest>
