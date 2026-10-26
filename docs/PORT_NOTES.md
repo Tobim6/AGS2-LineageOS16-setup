@@ -120,3 +120,17 @@ Supporting tools in `/home/tobim6/AGS2_LOS16/work/`: `erofs-utils` v1.9.4 (needs
 9. Fork EMUI8's defconfig with the now-current LOS deltas and confirm a real from-source kernel build on this machine (not yet build-tested here).
 
 **Reusable tooling from this session**: a Ghidra headless decompilation script at `/home/tobim6/.claude/jobs/67b4e122/tmp/ghidra_scripts/DecompileAccessCheck.java` (ephemeral job tmp — move to `work/tools/` for durability) takes a list of target strings OR exact function names, finds matching functions in a binary, and prints full decompiled C. Usage: `/opt/ghidra/support/analyzeHeadless <projectDir-with-no-dot-components> <projectName> -import <binary> -scriptPath <dir-containing-script> -postScript DecompileAccessCheck.java`. Gotcha: the Ghidra project directory path must not contain any `.`-prefixed component (e.g. `~/.claude/...` fails with `IllegalArgumentException: Path element starting with '.' is not permitted`) — use a plain workspace path instead.
+
+## Build pitfalls found while turning the hand-patched live system into a clean OTA
+- **Stale `out/`**: images are packed from whatever is in `out/target/product/AGS2/{system,vendor}`. Old leftovers (e.g. an old `init.tee.rc`, a
+  standalone camera provider, HMOS libs) were silently shipped. Run `make installclean` before the final `mka bacon`.
+- **Old mtimes**: firmware blobs carry 2021 mtimes, so make never re-copies a changed blob over an older `obj/` intermediate. Mirror the vendor
+  repo with `scripts/sync_vendor.sh` (no mtime preservation) or `touch` the files after copying.
+- **Dropped modules** (commit b0f5ee2) removed keymaster/gatekeeper/allocator/composer/health/bluetooth/memtrack/thermal/usb/drm services whose names
+  collide with AOSP; they are re-added as `<name>_emui8` modules (same stem). Same trick for libs; strip `.gnu_debugdata` from such blobs
+  (`objcopy --remove-section .gnu_debugdata`) or the AOSP twin's strip step fails.
+- **rc files** must install to `/vendor/etc/init` (`LOCAL_PROPRIETARY_MODULE` + `LOCAL_MODULE_RELATIVE_PATH := init`), not `/system/etc`.
+- **TEE**: `system_teecd`, `libtuidaemon`, both `native_packages.xml` must be packaged, otherwise every TEE session fails (keymaster/gatekeeper crash-loop
+  -> endless boot animation).
+- `tools/check_image.py <PRODUCT_OUT> <known-good dmesg>` checks DT_NEEDED closure and that every service of a known-good boot is defined.
+- The OTA must not contain `compatibility.zip` (hi6250-common releasetools.py disables it).
