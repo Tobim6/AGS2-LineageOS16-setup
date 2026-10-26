@@ -11,6 +11,7 @@ Setup help and glue for the AGS2 port. Everything needed to build lives in these
 | `proprietary_vendor_huawei_AGS2` | `vendor/huawei/AGS2` | `lineage-16.0` |
 | `android_frameworks_av_los16` (fork) | `frameworks/av` | `lineage-16.0-ags2` |
 | `android_frameworks_native_los16` (fork) | `frameworks/native` | `lineage-16.0-ags2` |
+| `android_frameworks_opt_net_wifi_los16` (fork) | `frameworks/opt/net/wifi` | `lineage-16.0-ags2` |
 
 Large files that cannot live in git are fetched by `scripts/fetch_large_files.sh`
 (`isp_dts.img` from this repo's `large-files` release, Cromite WebView from upstream).
@@ -40,7 +41,7 @@ wifi EAPOL TX fix for the AOSP wpa_supplicant.
 ## What works (verified on an AGS2-W09)
 Boot to launcher, USB/adb, wifi, Bluetooth, audio, landscape default (+ boot animation), hardware TEE,
 hardware H.264/HEVC video decoding (VXD), back camera preview, JPEG capture and 1080p30 video recording,
-Cromite WebView 138.
+Cromite WebView 138, hardware Bluetooth/wifi MAC addresses (from NV via the oeminfo server), Wi-Fi hotspot.
 
 ## Known gaps
 Front camera and camera video/ZSL modes beyond the basics untested; radio/telephony; `perfgenius`;
