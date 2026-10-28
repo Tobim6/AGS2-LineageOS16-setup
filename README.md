@@ -63,3 +63,12 @@ and registers `ICameraProvider/legacy/0` itself. Android 9's cameraserver needs 
 callbacks during `setUpVendorTags()` and skip the HAL flush before draining. `libui` must pass the HAL's vendor gralloc
 usage bits. `SceneDetection` is disabled in `/odm/etc/camera/ippalgoconfig*.xml` (crashes the daemon on video).
 Details: `docs/CAMERA_NOTES.md`.
+
+## TWRP and repartitioning (added 2026-10-28)
+* TWRP 3.7.1 for this tablet with decryption of the ROM's FBE `/data`, touch wake and enforcing SELinux:
+  https://github.com/Tobim6/twrp_device_huawei_AGS2 (twrp-12.1 tree; the small patches to `bootable/recovery`, `system/vold` and
+  `system/security` are in its `patches/` directory, see its README).
+* The install zip repartitions the eMMC from `preas` on (system = used + 300 MiB, vendor = used + 50 MiB, userdata = the rest). Read
+  `device/huawei/AGS2/repartition/README.md` first: install from the SD card, it destroys `/data`, and the kernel carries a device-tree fixup
+  (`drivers/of/base.c`) so init does not wait for the deleted `cust/preas/preavs/product/version` partitions.
+* Kernel extras: speaker analog-gain fix (`hi6555c`), USB dual-role port follows the OTG state machine.

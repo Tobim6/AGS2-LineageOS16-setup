@@ -13,3 +13,9 @@ echo "efc0a5c5a66055578e296fc37e6c0982  $A" | md5sum -c - 2>/dev/null || {
   curl -L -o "$A" https://github.com/uazo/cromite/releases/download/v138.0.7204.97-418943de425329115e0783375c12ee5aec36e2b6/arm64_SystemWebView.apk
   echo "efc0a5c5a66055578e296fc37e6c0982  $A" | md5sum -c -
 }
+# 3) install the Cromite WebView into /system instead of the product partition (the OTA does not flash product.img, the stock product partition
+#    is too small and init hides /product/app). The patch lives in the device tree; GNU patch needs --follow-symlinks for repo's linkfiles.
+P="$W/device/huawei/AGS2/webview/chromium-webview-system.patch"
+if [ -f "$P" ] && grep -q '^LOCAL_PRODUCT_MODULE := true' "$W/external/chromium-webview/Android.mk"; then
+  (cd "$W/external/chromium-webview" && patch -p1 --follow-symlinks < "$P")
+fi
